@@ -1,0 +1,44 @@
+/* Shared Lily palette: lily-frontend/src/app/globals.css. */
+:root {
+  color-scheme: dark;
+  --bg: #000;
+  --surface: #0c0c0d;
+  --surface-hover: #161617;
+  --text: #f2f0ec;
+  --text-2: #b4b2af;
+  --text-3: #8c8b88;
+  --line: #252525;
+  --line-strong: #41403e;
+  --accent: #e0567e;
+  --ok: #87b99b;
+  --ok-soft: #142019;
+  --ok-line: #314e3b;
+  --warn: #e9a53a;
+  --warn-soft: #231b0f;
+  --warn-line: #584222;
+  --bad: #f08078;
+  --bad-soft: #201111;
+  --bad-line: #56302e;
+  --unknown: #8c8b88;
+  --unknown-soft: #191919;
+  --unknown-line: #41403e;
+  --stable: #a8afbd;
+  --canary: #e0567e;
+  --canary-soft: #2a1720;
+  --radius-lg: 10px;
+  --radius: 8px;
+  --radius-sm: 5px;
+  --font: var(--font-plex-sans-kr), 'Apple SD Gothic Neo', 'Malgun Gothic', system-ui, sans-serif;
+  --mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+html { scroll-padding-top: 90px; }
+body { font: 14px/1.6 var(--font); color: var(--text); background: var(--bg); -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; word-break: keep-all; overflow-wrap: break-word; }
+button, select, input { font: inherit; color: inherit; }
+button, select { cursor: pointer; }
+button:disabled { cursor: wait; opacity: .5; }
+a { color: inherit; text-decoration: none; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+::selection { background: #703047; color: var(--text); }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; } }
