@@ -1,73 +1,49 @@
 # Lily 모니터링
 
 Next.js 16 · React 19 · TanStack Query · Recharts · Three.js.
-`lily-frontend`의 검정·핑크 팔레트와 IBM Plex Sans KR에 맞춘 모니터링 시제품입니다.
-lily-frontend와 동일한 꽃 마스크·색상·깊이 규칙으로 개화 상태의 입자를 생성하고, 꽃·별·연결선·정보 패널을 같은 Three.js 우주 공간에 배치합니다. 데스크톱 공간 보기는 창 전체를 채우고, 조작부는 공간 위에 고정합니다.
+로그인한 사용자의 프로젝트를 lily-frontend API로 확인하고, 실제 배포·관측 정보를 꽃과 5개 패널에 표시합니다.
 
-## 실행
+## 실행과 연결
 
 ```bash
 npm ci
-npm run dev
-# http://localhost:3000
-```
-
-API 주소가 없으면 데모 데이터로 동작합니다.
-
-| 주소 | 시나리오 |
-|---|---|
-| `/?scenario=bad` (기본) | 새 버전 에러율 기준 초과 |
-| `/?scenario=healthy` | 앱 정상, 서버 한 대 메모리 주의 |
-| `/?scenario=single` | 기존 버전만 존재 |
-
-## 화면
-
-- **공간 보기**: 꽃 중심의 입자와 연결된 5개 CSS3D 패널. 드래그로 360도 회전, 우클릭 드래그로 이동, 스크롤로 줌. 패널은 카메라 방향을 따라 배치되고 항상 정면을 향합니다. 줌해도 패널의 화면 크기를 유지해 내용을 읽을 수 있습니다.
-- **상세 보기**: 입자 또는 패널의 상세 버튼을 누르면 카메라가 해당 패널 앞으로 이동합니다. 필터·검색·그래프를 그대로 조작하며, `Esc` / 전체 공간 보기로 직전 시점에 돌아갑니다. 시점 초기화는 첫 구도로 돌아갑니다.
-- **목록 보기**: 상태 → 요약 → 추이 → 버전 비교 → 서버·로그.
-- **모바일**: 2열 수치 요약과 세로 패널. WebGL을 실행하지 않습니다.
-- **로그**: 수준·버전 필터, 수집된 결과 내 검색, 행을 펼쳐 Pod·Trace ID·예외 확인.
-- **갱신**: 지표 15초 / 로그 10초. 그래프 조회 범위와 최근 5분 요약을 구분합니다.
-
-공간 내부에서 패널로 이동하는 카메라 전환이 구현되어 있으며, lily-frontend의 배포 완료 화면에서 이어지는 전환은 아직 미연결입니다.
-자세한 설계와 한계는 [화면 검토](docs/design-review.md)를 참고하세요.
-
-## API 연결
-
-```bash
 cp .env.example .env.local
+npm run dev -- --port 3000
 ```
 
-| 변수 | 설명 |
-|---|---|
-| `NEXT_PUBLIC_API_BASE_URL` | 브라우저에서 접근 가능한 Observability API 주소. 비우면 데모 |
-| `NEXT_PUBLIC_USE_MOCK` | `1`이면 데모 모드 |
-| `NEXT_PUBLIC_APPS` | 앱 선택 목록, 쉼표로 구분 |
+- 대시보드 `.env.local`: `FRONTEND_URL=http://127.0.0.1:3210` (서버가 접근하는 프런트 URL).
+- 프런트 `.env.local`: `DASHBOARD_ORIGIN=http://127.0.0.1:3000`.
+- 프런트를 3210 포트로 실행한 뒤 **http://localhost:3210/dashboard** 에서 접속합니다.
+- 로그인 후 내 프로젝트를 선택합니다. 직접 링크: `/dashboard?project=<UUID>`.
+- 별도 포트에서 직접 접속할 때만 `FRONTEND_PUBLIC_URL=http://localhost:3210`을 설정하세요.
+- 서비스 연결 정보는 프런트의 `OBSERVABILITY_URL`, `INGRESS_API_URL`, `PROVISIONER_URL`에 설정합니다.
+  대응하는 `*_API_TOKEN`은 프런트 서버 전용이며 대시보드·브라우저에 전달하지 않습니다.
 
-[API 계약](docs/api-contract.md)에 세 가지 API의 타입·응답 예시와 백엔드 전달사항을 정리했습니다.
+## 실제 프로젝트 화면
 
-## 검증
+- 서버에서 로그인·이메일 인증·프로젝트 소유권을 검사합니다. 폴링 API도 요청마다 검사합니다.
+- 프로젝트 목록은 페이지 단위로 조회합니다. 앱 이름을 직접 입력해 다른 앱을 조회할 수 없습니다.
+- 지표: 분당 요청, 오류율(5xx), 평균·p95 응답, 앱 전체 시계열.
+- 배포: 최근 시도 결과·단계·빌드 로그와 현재 실행 슬롯·이미지를 구분합니다.
+- 자원: 선택한 앱의 파드, 준비 상태, 재시작, CPU(mCPU), 메모리(MiB). 미수집 값은 표시로 구분합니다.
+- 실행 로그: 전체/오류 포함 필터, 기간별 최근 100줄. 빌드 로그와 별도입니다.
+- 추가 정보: 해당 앱의 라우팅·카나리 비중과 관리형 DB 상태.
+- 배포 중에는 5초, 평상시 15초 갱신합니다. 세션이 만료되면 캐시를 비우고 인증 화면으로 이동합니다.
+- API 미연결·장애·매핑 대기·온프레미스 관측 미지원 상태에서 예시 수치를 만들지 않습니다.
+- 공간 보기의 꽃·360도 카메라·패널 확대와 목록/모바일 보기를 유지합니다.
 
-```bash
-npm run typecheck
-node --experimental-strip-types scripts/verify-monitoring.mjs
-node --experimental-strip-types scripts/verify-flower.mjs
-npm run build
-```
+## 명시적 데모
 
-## k3s 이미지
+`/dashboard/demo?scenario=bad|healthy|single`에서만 기존 시연 데이터를 사용합니다.
+실제 project 진입에는 데모 환경변수가 적용되지 않습니다.
 
-```bash
-docker build --build-arg NEXT_PUBLIC_API_BASE_URL=https://your-observability-host -t lily-dashboard .
-```
+## 배포
 
-`NEXT_PUBLIC_*`는 빌드 시 포함됩니다. API 주소는 사용자의 브라우저에서 접근할 수 있어야 합니다. Docker 이미지는 이 작업에서 실행 검증하지 않았습니다.
+`basePath`는 `/dashboard`로 고정하며 빌드 시 적용합니다. Dockerfile은 standalone 앱을 생성합니다.
+`FRONTEND_URL`은 실행 시 주입합니다. 공개 ingress/nginx는 **동일 origin**에서 `/dashboard`와
+`/dashboard/*`를 대시보드로, 나머지는 프런트로 전달하세요. 경로 접두사를 제거하지 않습니다.
+프런트 Next rewrite를 사용할 경우 `DASHBOARD_ORIGIN`은 프런트 빌드 시에도 필요합니다.
+운영 ingress를 직접 구성하면 프런트의 `DASHBOARD_ORIGIN`도 설정해 꽃 진입점을 활성화하세요.
 
-## 주요 파일
-
-- `components/Dashboard.tsx`: 쿼리, 패널 배치, 보기 전환
-- `components/ParticleStage.tsx`: WebGL + CSS3D 공유 씬, OrbitControls, 패널로 이동하는 카메라, React 포털
-- `lib/flower-particles.ts`: 원본 꽃 마스크를 읽는 입자 생성과 실제 중심 입자에 부착한 관측점
-- `components/dashboard.module.css`: 공간·목록·모바일 레이아웃
-- `lib/monitoring.ts`: 상태 요약 대상과 조사 시작 패널 선택
-- `lib/types.ts`, `lib/api.ts`, `lib/mock.ts`: API 타입, 요청, 데모 데이터
+실제 계약: [프로젝트 관측 API](docs/project-api.md).
+기존 [화면 검토](docs/design-review.md)와 [데모 API 설계](docs/api-contract.md)는 시제품 참고 문서입니다.

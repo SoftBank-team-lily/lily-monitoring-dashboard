@@ -356,3 +356,17 @@
   .spatial .topSlash, .spatial .productName { display: none; }
   .sceneIdentity strong, .sceneIdentity > span:last-child { display: none; }
 }
+
+/* 프로젝트 실데이터 패널 */
+.projectName { max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
+.buildLogs, .liveLogs pre { white-space: pre-wrap; overflow-wrap: anywhere; font: 11px/1.6 var(--mono); }
+.buildLogs { max-height: 300px; overflow-y: auto; }
+.liveLogs { list-style: none; padding: 0; margin: 10px 0; max-height: 310px; overflow-y: auto; }
+.liveLogs li { padding: 8px 0; border-top: 1px solid var(--line); }
+.liveLogs pre { margin: 4px 0; }
+.scenePanel p, .scenePanel strong { overflow-wrap: anywhere; }
+@media (min-width: 1100px) {
+  .spatial .liveLogs { max-height: 150px; }
+  .spatial .scenePanel[data-selected='true'] .liveLogs { max-height: none; }
+  .spatial .scenePanel:not([data-selected='true']) .bubbleContent { max-height: 390px; overflow-y: auto; scrollbar-width: thin; }
+}

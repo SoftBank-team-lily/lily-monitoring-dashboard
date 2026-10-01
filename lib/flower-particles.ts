@@ -69,7 +69,7 @@ export function buildFlowerParticles(mask: FlowerMask): FlowerParticles {
 
 export async function loadFlowerMask(): Promise<ImageData> {
   const image = new Image();
-  image.src = '/flower-mask.png';
+  image.src = '/dashboard/flower-mask.png';
   await image.decode();
   const canvas = document.createElement('canvas');
   canvas.width = image.width; canvas.height = image.height;

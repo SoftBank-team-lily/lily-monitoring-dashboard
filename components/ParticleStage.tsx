@@ -7,7 +7,7 @@ import s from './dashboard.module.css';
 export type { PanelId } from '@/lib/flower-particles';
 
 type SceneControls = { update: (panel: PanelId | null) => void; reset: () => void };
-interface Props { app: string; active: PanelId | null; panels: Record<PanelId, ReactNode>; onSelect: (panel: PanelId) => void; onReset: () => void; }
+interface Props { labels?: Partial<Record<PanelId, string>>; app: string; active: PanelId | null; panels: Record<PanelId, ReactNode>; onSelect: (panel: PanelId) => void; onReset: () => void; }
 const PANEL_PLACES: Record<PanelId, { position: [number, number, number]; width: number }> = {
   metrics: { position: [-5.35, 2.2, .65], width: 420 },
   compare: { position: [5.35, 2.05, -.15], width: 430 },
@@ -18,7 +18,7 @@ const PANEL_PLACES: Record<PanelId, { position: [number, number, number]; width:
 const PANEL_SCALE = .01;
 
 /** Flower, stars, connections and HTML panels share one Three.js scene and one camera. */
-export default function ParticleStage({ app, active, panels, onSelect, onReset }: Props) {
+export default function ParticleStage({ app, active, panels, onSelect, onReset, labels }: Props) {
   const host = useRef<HTMLDivElement>(null);
   const htmlHost = useRef<HTMLDivElement>(null);
   const root = useRef<HTMLDivElement>(null);
@@ -345,14 +345,14 @@ export default function ParticleStage({ app, active, panels, onSelect, onReset }
     <div className={s.htmlSpaceHost} ref={htmlHost} />
     {available && mounts.map(({ id, element }) => {
       const point = OBSERVATION_POINTS.find((p) => p.id === id)!;
-      return createPortal(<div className={s.scenePanel} data-panel={id} data-selected={active === id || undefined} tabIndex={-1} inert={active !== null && active !== id} aria-hidden={active !== null && active !== id || undefined} aria-label={`${point.label}${active === id ? ' 상세 보기' : ''}`}>
-        <div className={s.bubbleControl}><span>{point.number} / {point.label}</span><button type="button" aria-label={active === id ? `${point.label} 상세 보기 닫기` : `${point.label} 패널 확대`} aria-expanded={active === id} onClick={() => active === id ? onReset() : onSelect(id)}>{active === id ? '전체 공간 ↙' : '상세 ↗'}</button></div>
+      return createPortal(<div id={id} className={s.scenePanel} data-panel={id} data-selected={active === id || undefined} tabIndex={-1} inert={active !== null && active !== id} aria-hidden={active !== null && active !== id || undefined} aria-label={`${labels?.[id] ?? point.label}${active === id ? ' 상세 보기' : ''}`}>
+        <div className={s.bubbleControl}><span>{point.number} / {labels?.[id] ?? point.label}</span><button type="button" aria-label={active === id ? `${labels?.[id] ?? point.label} 상세 보기 닫기` : `${labels?.[id] ?? point.label} 패널 확대`} aria-expanded={active === id} onClick={() => active === id ? onReset() : onSelect(id)}>{active === id ? '전체 공간 ↙' : '상세 ↗'}</button></div>
         <div className={s.bubbleContent}>{panels[id]}</div>
       </div>, element, id);
     })}
     {!available && <div className={s.spaceFallback}>{OBSERVATION_POINTS.map(({ id }) => <div key={id} className={s.scenePanel} data-panel={id} data-selected={active === id || undefined} tabIndex={-1}>{panels[id]}</div>)}</div>}
     {available && !mounts.length && <p className={s.spaceLoading} role="status">3D 관측 공간을 준비하고 있어요…</p>}
-    {available && OBSERVATION_POINTS.map((anchor) => <button key={anchor.id} type="button" className={s.particleAnchor} data-anchor={anchor.id} tabIndex={active && active !== anchor.id ? -1 : 0} aria-label={`${anchor.label} 입자 확대`} aria-controls={anchor.id} aria-pressed={active === anchor.id} onClick={() => onSelect(anchor.id)}><span>{anchor.number}</span></button>)}
+    {available && OBSERVATION_POINTS.map((anchor) => <button key={anchor.id} type="button" className={s.particleAnchor} data-anchor={anchor.id} tabIndex={active && active !== anchor.id ? -1 : 0} aria-label={`${labels?.[anchor.id] ?? anchor.label} 입자 확대`} aria-controls={anchor.id} aria-pressed={active === anchor.id} onClick={() => onSelect(anchor.id)}><span>{anchor.number}</span></button>)}
     <div className={s.sceneIdentity}><span className={s.eyebrow}>LILY / OBSERVATORY</span><strong>{app}</strong><span>3D 관측 공간 · 관측점 5개</span></div>
     <div className={s.sceneActions}>{active ? <button type="button" className={s.sceneReset} onClick={onReset}>← 전체 공간 보기 <kbd>Esc</kbd></button> : <button type="button" className={s.sceneReset} onClick={() => controls.current?.reset()}>시점 초기화</button>}</div>
     <p className={s.particleHelp}>{available ? active ? '선택한 패널 앞으로 이동했어요' : '드래그 · 360° 회전  /  우클릭 드래그 · 이동  /  스크롤 · 줌  /  입자 클릭 · 상세' : '3D를 사용할 수 없어 정보 패널을 표시합니다'}</p>
