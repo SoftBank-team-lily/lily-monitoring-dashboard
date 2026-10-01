@@ -31,6 +31,7 @@ export function ProjectDashboard({ project, loginUrl, verifyUrl, accountUrl }: {
       : ['queued', 'running'].includes(state.state.data?.project.latestDeployment?.status ?? '') ? 5000 : 15000,
     retry: (count, error) => ![401, 403, 404].includes(error.status) && count < 1,
     gcTime: 0,
+    refetchOnWindowFocus: "always",
   });
   useEffect(() => {
     if (!query.error || ![401, 403].includes(query.error.status)) return;
@@ -72,10 +73,10 @@ export function ProjectDashboard({ project, loginUrl, verifyUrl, accountUrl }: {
   return <div className={`${s.page} ${view === 'spatial' ? s.spatial : ''}`}>
     <a className={s.skipLink} href="#overview">모니터링 본문으로 이동</a>
     <header className={s.top}><div className={s.topInner}><a className={s.brand} href={accountUrl}>Lily<span className={s.brandDot}>.</span></a><a href="/dashboard">내 프로젝트 ↗</a></div></header>
-    <div className={s.toolbar}><span className={s.projectName} title={`${project.repo}/${project.rootDir}`}>{project.name}</span><div className={s.segmented} role="group" aria-label="조회 기간">{[['5m', '5분'], ['15m', '15분'], ['1h', '1시간']].map(([value, label]) => <button key={value} aria-pressed={range === value} onClick={() => setRange(value)}>{label}</button>)}</div><button className={s.refresh} disabled={query.isFetching} onClick={() => void query.refetch()} aria-label="모든 패널 새로고침">↻</button></div>
+    <div className={s.toolbar}><span className={s.projectName} title={`${project.repo}/${project.rootDir}`}>{project.target === 'onprem' ? '내 PC · ' : ''}{project.name}</span><div className={s.segmented} role="group" aria-label="조회 기간">{[['5m', '5분'], ['15m', '15분'], ['1h', '1시간']].map(([value, label]) => <button key={value} aria-pressed={range === value} onClick={() => setRange(value)}>{label}</button>)}</div><button className={s.refresh} disabled={query.isFetching} onClick={() => void query.refetch()} aria-label="모든 패널 새로고침">↻</button></div>
     <main className={s.main} id="overview" tabIndex={-1}>
       <div className={s.pageHeading}><div><p className={s.eyebrow}>{project.target === 'cloud' ? 'CLOUD' : 'ON PREMISE'}</p><h1>{project.name}</h1><p className={s.subtitle}>{project.repo}{project.rootDir ? ` / ${project.rootDir}` : ''}</p></div><div className={s.viewControls}><div className={s.segmented} role="group" aria-label="대시보드 보기"><button aria-pressed={view === 'spatial'} onClick={() => { setView('spatial'); setActive(null); }}>공간 보기</button><button aria-pressed={view === 'list'} onClick={() => { setView('list'); setActive(null); }}>목록 보기</button></div></div></div>
-      <div className={s.hero} data-status={status?.level === 'CRITICAL' ? 'bad' : status?.level === 'WARNING' ? 'warn' : 'neutral'}><div className={s.heroText}><h2>{status?.message ?? (data?.status.state !== 'ready' ? data?.status.message : null) ?? '상태 확인 중'}</h2><p>{status ? `${status.reason} · 권장 조치: ${status.action}` : '배포 상태와 관측 연결 상태는 각각 확인할 수 있어요.'}</p></div></div>
+      <div className={s.hero} aria-label="현재 관측 상태" aria-live="polite" data-status={status?.level === 'CRITICAL' ? 'bad' : status?.level === 'WARNING' ? 'warn' : 'neutral'}><div className={s.heroText}><h2>{status?.message ?? (data?.status.state !== 'ready' ? data?.status.message : null) ?? '상태 확인 중'}</h2><p>{status ? `${status.reason} · 권장 조치: ${status.action}` : '배포 상태와 관측 연결 상태는 각각 확인할 수 있어요.'}</p></div></div>
       <div className={s.layout}>
         {view === 'spatial' && wide ? <ParticleStage app={project.name} active={active} panels={panels} labels={labels} onSelect={select} onReset={reset} /> : OBSERVATION_POINTS.map(({ id, number }) => <div key={id} className={s.scenePanel} data-panel={id} data-selected={active === id || undefined} tabIndex={-1} aria-label={labels[id]}><div className={s.bubbleControl}><span>{number} / {labels[id]}</span><button onClick={() => active === id ? reset() : select(id)} aria-expanded={active === id}>{active === id ? '전체 보기 ↙' : '확대 ↗'}</button></div><div className={s.bubbleContent}>{panels[id]}</div></div>)}
       </div>

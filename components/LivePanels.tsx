@@ -51,6 +51,7 @@ export function DeploymentPanel({ data }: { data: Monitor }) {
     {deployment?.message && <p className={s.hint}>{deployment.message}</p>}
     {href && <a href={href} target="_blank" rel="noreferrer">배포된 앱 열기 ↗</a>}
     {!!deployment?.logs.length && <details><summary>빌드 로그 · 최근 {deployment.logs.length}줄</summary><pre className={s.buildLogs}>{deployment.logs.join('\n')}</pre></details>}
+    {data.project.target === 'onprem' && <><h3>내 PC 에이전트</h3><ResourceView resource={data.agent}>{(agent) => <p>{agent ? `${agent.agentId ?? '내 PC'} · ${agent.connected ? '연결됨' : '연결 끊김'}` : '등록된 에이전트가 없어요.'}</p>}</ResourceView></>}
     <h3>현재 실행 중인 앱</h3>
     <ResourceView resource={data.app}>{(app) => <><p>{app.strategy} · 활성 슬롯 {app.activeSlot ?? '미확인'} · 준비 {app.readyReplicas}/{app.replicas}</p>
       <ul className={s.serverList}>{app.deployments.map((item) => <li className={s.server} key={item.name}><strong>{item.slot ?? item.name}</strong><p className={s.hint}>{item.image ?? '이미지 미확인'} · 준비 {item.readyReplicas}/{item.replicas}</p></li>)}</ul>

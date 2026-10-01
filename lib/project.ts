@@ -24,6 +24,7 @@ export type App = {
 export type Monitor = {
   project: Project; appName: string | null; namespace: string; generatedAt: string; window: string;
   status: Resource<{ level: string; message: string; reason: string; action: string; judgedAt: string }>;
+  agent: Resource<{ connected: boolean; agentId: string | null; database: boolean } | null>;
   metrics: Resource<Metrics>; pods: Resource<Pod[]>; app: Resource<App>;
   logs: Resource<{ at: string; pod: string | null; slot: string | null; image: string | null; message: string }[]>;
   route: Resource<{ url: string; primaryHost: string; serviceName: string; servicePort: number;
