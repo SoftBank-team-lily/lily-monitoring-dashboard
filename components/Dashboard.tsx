@@ -84,9 +84,10 @@ export function Dashboard({ apps }: { apps: string[] }) {
     compare: metrics.isError ? <Failure what="버전 비교" retry={() => void metrics.refetch()} /> : metrics.data ? <VersionCompare data={metrics.data} /> : <Loading what="버전 비교" />,
     servers: <div id="servers">{servers.isError ? <Failure what="서버 지표" retry={() => void servers.refetch()} /> : servers.data ? <ServerList data={servers.data} /> : <Loading what="서버 지표" />}</div>,
     logs: <div id="logs">{logs.isError ? <Failure what="로그" retry={() => void logs.refetch()} /> : logs.data ? <LogTable key={app} data={logs.data} filter={filter} onFilter={setFilter} roles={roles} version={logVersion} onVersion={setLogVersion} /> : <Loading what="로그" />}</div>,
+    traffic: <section className={s.trafficPanel}><div className={s.cardHead}><h2>거점과 트래픽</h2></div><p className={s.empty}>실제 온프레미스 프로젝트에서 거점과 트래픽을 관리할 수 있어요.</p></section>,
   };
   const focusedScene = view === 'spatial' && wide && activePanel !== null;
-  const order: PanelId[] = view === 'spatial' ? ['metrics', 'compare', 'servers', 'logs', 'trends'] : ['metrics', 'trends', 'compare', 'servers', 'logs'];
+  const order: PanelId[] = view === 'spatial' ? ['metrics', 'compare', 'servers', 'logs', 'traffic', 'trends'] : ['metrics', 'trends', 'compare', 'servers', 'logs', 'traffic'];
 
   return <div className={`${s.page} ${view === 'spatial' ? s.spatial : ''}`}>
     <TopBar apps={apps} app={app} onApp={(value) => { setApp(value); setActivePanel(null); setLogVersion('ALL'); setFilter('ALL'); }} range={range} onRange={setRange} updatedAt={metrics.data ? Date.parse(metrics.data.generatedAt) : undefined} mock={USE_MOCK} refreshing={metrics.isFetching || servers.isFetching || logs.isFetching} onRefresh={refresh} />

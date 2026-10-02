@@ -13,7 +13,8 @@ const PANEL_PLACES: Record<PanelId, { position: [number, number, number]; width:
   compare: { position: [5.35, 2.05, -.15], width: 430 },
   servers: { position: [-5.5, -1.32, 1.2], width: 420 },
   logs: { position: [5.5, -1.35, .9], width: 440 },
-  trends: { position: [0, -3.3, 2.15], width: 620 },
+  trends: { position: [5.4, -3.5, 2.15], width: 440 },
+  traffic: { position: [-5.4, -3.5, 2.15], width: 440 },
 };
 const PANEL_SCALE = .01;
 

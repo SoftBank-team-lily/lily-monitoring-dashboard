@@ -4,7 +4,8 @@ export const OBSERVATION_POINTS = [
   { id: 'compare', label: '버전 비교', number: '02', position: [.25, .21, -.6] },
   { id: 'servers', label: '서버 자원', number: '03', position: [-.26, -.18, -.58] },
   { id: 'logs', label: '최근 로그', number: '04', position: [.26, -.18, -.58] },
-  { id: 'trends', label: '지표 추이', number: '05', position: [0, -.33, -.5] },
+  { id: 'trends', label: '지표 추이', number: '05', position: [.32, -.42, -.5] },
+  { id: 'traffic', label: '거점과 트래픽', number: '06', position: [-.32, -.42, -.5] },
 ] as const;
 export type PanelId = typeof OBSERVATION_POINTS[number]['id'];
 export const FLOWER_SCALE = 1.45;

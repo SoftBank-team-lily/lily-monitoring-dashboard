@@ -2,13 +2,20 @@ import 'server-only';
 
 /** 신뢰하는 내부 프런트 서버에만 세션을 전달한다. 브라우저가 대상 URL을 정하지 않는다. */
 export async function frontendGet(path: string, cookie: string): Promise<Response> {
+  return frontendRequest(path, cookie, 'GET');
+}
+
+export async function frontendRequest(path: string, cookie: string, method: 'GET' | 'PUT' | 'POST', body?: string): Promise<Response> {
   const origin = process.env.FRONTEND_URL;
   if (!origin) return Response.json({ error: { message: '로그인 서비스 연결이 필요해요.' } }, { status: 503 });
   try {
     const base = new URL(origin);
     if (!['http:', 'https:'].includes(base.protocol) || base.username || base.password) throw new Error('Invalid origin');
+    const mutationOrigin = new URL(process.env.FRONTEND_AUTH_ORIGIN || process.env.FRONTEND_PUBLIC_URL || origin);
+    if (!['http:', 'https:'].includes(mutationOrigin.protocol) || mutationOrigin.username || mutationOrigin.password) throw new Error('Invalid mutation origin');
     return await fetch(new URL(path, base), {
-      headers: { cookie }, cache: 'no-store', redirect: 'error', signal: AbortSignal.timeout(12000),
+      method, body, headers: { cookie, ...(body ? { 'Content-Type': 'application/json' } : {}), ...(method !== 'GET' ? { Origin: mutationOrigin.origin } : {}) },
+      cache: 'no-store', redirect: 'error', signal: AbortSignal.timeout(12000),
     });
   } catch {
     return Response.json({ error: { message: '프로젝트 서버에 연결하지 못했어요.' } }, { status: 502 });

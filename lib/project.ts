@@ -1,9 +1,22 @@
 /** lily-frontend /api/projects/:id/monitor의 공개 계약. 비밀값은 포함하지 않는다. */
 export type Project = {
   id: string; name: string; repo: string; rootDir: string; target: 'cloud' | 'onprem';
+  burst?: ProjectBurst | null;
+  cloudPods?: { state: string; ready: number; replicas: number } | null;
   latestDeployment: null | {
     id: string; status: string; stage: string | null; url: string | null;
     message: string | null; logs: string[];
+  };
+};
+export type ProjectBurst = {
+  enabled: boolean; cloudPercent: number;
+  agent: 'connected' | 'waiting' | 'outdated' | 'offline' | 'unknown' | 'other';
+  live: null | {
+    available: boolean; enabled: boolean; cloudPercent: number; warm: boolean; phase: string;
+    home: 'ONPREM' | 'CLOUD' | 'MOVING_TO_CLOUD' | 'MOVING_TO_ONPREM' | 'UNKNOWN';
+    movable: boolean; homeCancellable?: boolean; homeStep?: string;
+    databaseMode?: string; databaseMovable?: boolean;
+    localActive: number; remoteActive: number; overflowedTotal: number;
   };
 };
 export type ProjectPage = { items: Project[]; nextCursor: string | null };

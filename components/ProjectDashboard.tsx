@@ -6,10 +6,11 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { OBSERVATION_POINTS, type PanelId } from '@/lib/flower-particles';
 import type { Monitor, Project } from '@/lib/project';
 import { DeploymentPanel, LogsPanel, MetricPanel, PodPanel, TrendPanel } from './LivePanels';
+import { TrafficPanel } from './TrafficPanel';
 import s from './dashboard.module.css';
 
 const ParticleStage = dynamic(() => import('./ParticleStage'), { ssr: false });
-const labels: Record<PanelId, string> = { metrics: '앱 지표', trends: '지표 추이', compare: '배포와 실행 상태', servers: '앱 파드와 자원', logs: '앱 실행 로그' };
+const labels: Record<PanelId, string> = { metrics: '앱 지표', trends: '지표 추이', compare: '배포와 실행 상태', servers: '앱 파드와 자원', logs: '앱 실행 로그', traffic: '거점과 트래픽' };
 class RequestError extends Error { constructor(public status: number) { super('데이터를 불러오지 못했어요.'); } }
 
 export function ProjectDashboard({ project, loginUrl, verifyUrl, accountUrl }: { project: Project; loginUrl: string; verifyUrl: string; accountUrl: string }) {
@@ -68,7 +69,8 @@ export function ProjectDashboard({ project, loginUrl, verifyUrl, accountUrl }: {
     metrics: <MetricPanel data={data} />, trends: <TrendPanel data={data} />,
     compare: <DeploymentPanel data={data} />, servers: <PodPanel data={data} />,
     logs: <LogsPanel data={data} level={level} onLevel={setLevel} />,
-  } : { metrics: fallback, trends: fallback, compare: fallback, servers: fallback, logs: fallback };
+    traffic: <TrafficPanel project={project} />,
+  } : { metrics: fallback, trends: fallback, compare: fallback, servers: fallback, logs: fallback, traffic: <TrafficPanel project={project} /> };
   const status = data?.status.state === 'ready' ? data.status.data : null;
   return <div className={`${s.page} ${view === 'spatial' ? s.spatial : ''}`}>
     <a className={s.skipLink} href="#overview">모니터링 본문으로 이동</a>
