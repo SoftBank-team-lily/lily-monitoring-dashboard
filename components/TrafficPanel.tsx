@@ -97,7 +97,7 @@ export function TrafficPanel({ project }: { project: Project }) {
     </div>
     <p className={s.trafficFootnote}>HOME/AWS별 CPU·RAM·p95 관측 API가 연결되면 각 값을 표시합니다. 앱 전체 지표를 한쪽 값으로 대체하지 않습니다.</p>
     <div className={s.trafficSection}>
-      <div className={s.trafficRow}><strong>공개 주소 거점</strong><span>{homeName[live?.home ?? 'UNKNOWN']}</span></div>
+      <div className={s.trafficRow}><strong>공개 주소 거점</strong><span className={`${s.placeBadge} ${live?.home === 'CLOUD' ? s.placeCloud : live?.home === 'ONPREM' ? s.placeOnprem : s.placeMoving}`} aria-live="polite">{live?.home === 'CLOUD' ? '☁ ' : live?.home === 'ONPREM' ? '🖥 ' : '⇄ '}{homeName[live?.home ?? 'UNKNOWN']}{moving && live?.homeSteps?.length ? ` · 약 ${Math.min(99, Math.round(((Math.max(0, live.homeSteps.indexOf(live.homeStep ?? '')) + 0.5) / live.homeSteps.length) * 100))}%` : ''}</span></div>
       {moving && <p className={s.hint}>진행 단계: {live?.homeStep || '상태 확인 중'} {live?.homeCancellable && <button type="button" disabled={busy} onClick={() => void send('cancel')}>전환 취소</button>}</p>}
       <div className={s.trafficActions}>
         <button type="button" disabled={!homeReady || busy || live?.home === 'ONPREM'} onClick={() => { setTarget('onprem'); setMigrateDatabase(false); }}>HOME으로 전환</button>
@@ -112,7 +112,7 @@ export function TrafficPanel({ project }: { project: Project }) {
       </div>}
     </div>
     <div className={s.trafficSection}>
-      <div className={s.trafficRow}><strong>Traffic · 클라우드 버스팅</strong><span>{live?.enabled ? live.cloudPercent ? `HOME ${100 - live.cloudPercent}% / AWS ${live.cloudPercent}%` : '자동' : burst?.enabled ? '적용 대기' : '꺼짐'}</span></div>
+      <div className={s.trafficRow}><strong>Traffic · 클라우드 버스팅</strong><span>{live?.home === 'CLOUD' ? 'AWS 100% · 거점이 AWS라 버스팅 쉼' : live?.enabled ? live.cloudPercent ? `HOME ${100 - live.cloudPercent}% / AWS ${live.cloudPercent}%` : '자동' : burst?.enabled ? '적용 대기' : '꺼짐'}</span></div>
       <p className={s.hint}>자동은 평소 HOME에서 처리하고, 과부하 때 AWS로 넘깁니다. 수동은 정한 비율로 분산합니다.</p>
       <div className={s.trafficModes} role="group" aria-label="트래픽 모드">
         <button type="button" aria-pressed={mode === 'auto'} disabled={!burstReady || busy} onClick={() => setMode('auto')}>자동</button>

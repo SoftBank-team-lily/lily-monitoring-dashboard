@@ -14,7 +14,7 @@ export type ProjectBurst = {
   live: null | {
     available: boolean; enabled: boolean; cloudPercent: number; warm: boolean; phase: string;
     home: 'ONPREM' | 'CLOUD' | 'MOVING_TO_CLOUD' | 'MOVING_TO_ONPREM' | 'UNKNOWN';
-    movable: boolean; homeCancellable?: boolean; homeStep?: string;
+    movable: boolean; homeCancellable?: boolean; homeStep?: string; homeSteps?: string[];
     databaseMode?: string; databaseMovable?: boolean;
     localActive: number; remoteActive: number; overflowedTotal: number;
   };

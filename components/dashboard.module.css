@@ -401,3 +401,9 @@
   .spatial .scenePanel[data-selected='true'] .liveLogs { max-height: none; }
   .spatial .scenePanel:not([data-selected='true']) .bubbleContent { max-height: 390px; overflow-y: auto; scrollbar-width: thin; }
 }
+
+/* 공개 주소 거점 배지: HOME 초록, AWS 파랑, 전환 중 주황 */
+.placeBadge { display: inline-block; padding: 2px 10px; border: 1px solid currentColor; border-radius: 8px; font-weight: 600; }
+.placeOnprem { color: #4cc38a; }
+.placeCloud { color: #5aa7f0; }
+.placeMoving { color: #e9a53a; }
