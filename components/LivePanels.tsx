@@ -46,6 +46,7 @@ export function TrendPanel({ data }: { data: Monitor }) {
 export function DeploymentPanel({ data }: { data: Monitor }) {
   const deployment = data.project.latestDeployment;
   const href = safeHref(deployment?.url);
+  const observedUrl = data.app.state === 'ready' ? safeHref(data.app.data.url) : undefined;
   return <section className={s.card}><div className={s.cardHead}><h2>배포와 실행 상태</h2></div>
     <p><strong>{deployment ? statusNames[deployment.status] ?? deployment.status : '첫 배포 대기'}</strong>{deployment?.stage && ` · ${deployment.stage}`}</p>
     {deployment?.message && <p className={s.hint}>{deployment.message}</p>}
@@ -57,7 +58,9 @@ export function DeploymentPanel({ data }: { data: Monitor }) {
       <ul className={s.serverList}>{app.deployments.map((item) => <li className={s.server} key={item.name}><strong>{item.slot ?? item.name}</strong><p className={s.hint}>{item.image ?? '이미지 미확인'} · 준비 {item.readyReplicas}/{item.replicas}</p></li>)}</ul>
     </>}</ResourceView>
     <details><summary>라우팅과 데이터베이스</summary>
-      <h3>라우팅</h3><ResourceView resource={data.route}>{(route) => <p>{route.primaryHost} → {route.serviceName}:{route.servicePort}{route.canary ? ` · 카나리 ${route.canary.weight}%` : ''}</p>}</ResourceView>
+      <h3>라우팅</h3>{data.route.state === 'ready'
+        ? <p>{data.route.data.primaryHost} → {data.route.data.serviceName}:{data.route.data.servicePort}{data.route.data.canary ? ` · 카나리 ${data.route.data.canary.weight}%` : ''}</p>
+        : <>{observedUrl && <p><a href={observedUrl} target="_blank" rel="noreferrer">관측된 앱 공개 주소 ↗</a></p>}<p className={s.hint}>{data.route.message} 라우트 세부 정보는 조회할 수 없어요.</p></>}
       <h3>데이터베이스</h3><ResourceView resource={data.databases}>{(items) => items.length ? <ul>{items.map((item) => <li key={item.id}>{item.engine} · {item.status}</li>)}</ul> : <p className={s.hint}>관리형 DB가 등록되지 않았어요. 외부 DB 연결 여부는 앱 설정에서 확인해 주세요.</p>}</ResourceView>
     </details>
   </section>;

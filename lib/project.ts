@@ -18,7 +18,7 @@ export type Pod = {
   cpuMillicores: number | null; memoryMiB: number | null;
 };
 export type App = {
-  strategy: string; activeSlot: string | null; image: string | null; readyReplicas: number; replicas: number;
+  url: string | null; strategy: string; activeSlot: string | null; image: string | null; readyReplicas: number; replicas: number;
   deployments: { name: string; slot: string | null; image: string | null; readyReplicas: number; replicas: number }[];
 };
 export type Monitor = {
