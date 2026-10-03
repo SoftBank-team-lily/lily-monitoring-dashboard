@@ -727,5 +727,14 @@
   "{{value0}} 패널 이동": "Move {{value0}} panel",
   "드래그하거나 방향키로 패널을 이동하세요. Shift를 누르면 더 크게 이동해요.": "Drag or use the arrow keys to move the panel. Hold Shift for larger steps.",
   "패널 배치 초기화": "Reset panel layout",
-  "패널 제목 드래그 · 배치  /  배경 드래그 · 회전  /  우클릭 · 이동  /  스크롤 · 줌": "Drag panel title · arrange  /  Drag background · rotate  /  Right drag · pan  /  Scroll · zoom"
+  "패널 제목 드래그 · 배치  /  배경 드래그 · 회전  /  우클릭 · 이동  /  스크롤 · 줌": "Drag panel title · arrange  /  Drag background · rotate  /  Right drag · pan  /  Scroll · zoom",
+  "조작 방법": "Controls",
+  "패널 제목 드래그": "Drag panel title",
+  "배경 드래그": "Drag background",
+  "우클릭 드래그": "Right-click drag",
+  "스크롤": "Scroll",
+  "배치": "Arrange",
+  "회전": "Rotate",
+  "이동": "Pan",
+  "줌": "Zoom"
 }

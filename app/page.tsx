@@ -21,14 +21,15 @@ export default async function Page({ searchParams }: { searchParams: Promise<Rec
   const loginUrl = localeLink(frontendLink(`/login?next=${encodeURIComponent(returnTo)}`), locale);
   const verifyUrl = localeLink(frontendLink('/verify-email'), locale);
   const accountUrl = localeLink(frontendLink('/account'), locale);
+  const homeUrl = localeLink(frontendLink('/'), locale);
   const cookie = (await headers()).get('cookie') ?? '';
   const response = await frontendGet(id ? `/api/projects/${id}` : `/api/projects?limit=20${query.cursor ? `&cursor=${query.cursor}` : ''}`, cookie);
   if (response.status === 401) return <LoginRedirect href={loginUrl} />;
   if (response.status === 403) return <LoginRedirect href={verifyUrl} />;
   if (!response.ok) return <Notice message={response.status === 404 ? t("프로젝트를 찾을 수 없거나 접근할 수 없어요.") : t("프로젝트 서버에 연결하지 못했어요.")} />;
-  if (id) return <ProjectDashboard key={id} project={await response.json() as Project} loginUrl={loginUrl} verifyUrl={verifyUrl} accountUrl={accountUrl} />;
+  if (id) return <ProjectDashboard key={id} project={await response.json() as Project} loginUrl={loginUrl} verifyUrl={verifyUrl} accountUrl={accountUrl} homeUrl={homeUrl} />;
   const projects = await response.json() as ProjectPage;
-  return <><header className={s.top}><div className={s.topInner}><span className={s.brand}>Lily.</span><LanguageMenu /></div></header><main className={s.main}>
+  return <><header className={s.top}><div className={s.topInner}><a className={s.brand} href={homeUrl}>Lily.</a><LanguageMenu /></div></header><main className={s.main}>
     <div className={s.pageHeading}><div><p className={s.eyebrow}>LILY / MONITORING</p><h1>{t("내 프로젝트")}</h1><p className={s.subtitle}>{t("상태를 확인할 프로젝트를 선택해 주세요.")}</p></div><a href={accountUrl}>{t("계정으로 ↗")}</a></div>
     {projects.items.length ? projects.items.map((project) => <a key={project.id} className={s.card} href={`/dashboard?project=${project.id}`}>
       <h2>{project.name}</h2><p>{project.repo}{project.rootDir ? ` / ${project.rootDir}` : ''}</p>
@@ -40,5 +41,5 @@ export default async function Page({ searchParams }: { searchParams: Promise<Rec
 async function Notice({ message }: { message: string }) {
   const t = await getTranslator();
   const locale = await getLocale();
-  return <><header className={s.top}><div className={s.topInner}><span className={s.brand}>Lily.</span><LanguageMenu /></div></header><main className={s.main}><h1>{t("대시보드를 열 수 없어요.")}</h1><p role="alert">{t(message)}</p><a href={localeLink(frontendLink('/account'), locale)}>{t("내 프로젝트로")}</a></main></>;
+  return <><header className={s.top}><div className={s.topInner}><a className={s.brand} href={localeLink(frontendLink('/'), locale)}>Lily.</a><LanguageMenu /></div></header><main className={s.main}><h1>{t("대시보드를 열 수 없어요.")}</h1><p role="alert">{t(message)}</p><a href={localeLink(frontendLink('/account'), locale)}>{t("내 프로젝트로")}</a></main></>;
 }

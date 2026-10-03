@@ -5,13 +5,14 @@ import { useI18n } from "@/lib/i18n/provider";
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { OBSERVATION_POINTS, type PanelId } from '@/lib/flower-particles';
+import { ControlGuide } from './ControlGuide';
 import s from './dashboard.module.css';
 export type { PanelId } from '@/lib/flower-particles';
 
 type SceneControls = { update: (panel: PanelId | null) => void; reset: () => void; resetPanels: () => void };
 interface Props { labels?: Partial<Record<PanelId, string>>; app: string; active: PanelId | null; panels: Record<PanelId, ReactNode>; onSelect: (panel: PanelId) => void; onReset: () => void; }
 const PANEL_PLACES: Record<PanelId, { position: [number, number, number]; width: number }> = {
-  metrics: { position: [-3.0207, 1.8558, .6922], width: 420 },
+  metrics: { position: [-3.4207, 1.8558, .6922], width: 420 },
   compare: { position: [3.5505, 1.7524, -.0738], width: 430 },
   servers: { position: [-3.7213, -1.4524, 1.2127], width: 420 },
   logs: { position: [4.4824, -1.2001, .8666], width: 440 },
@@ -407,7 +408,6 @@ export default function ParticleStage({ app, active, panels, onSelect, onReset, 
         if (index !== undefined && observationPoints[index]) selectRef.current(observationPoints[index].id);
       }
       function lost(e: Event) { e.preventDefault(); finishDrag(); cancelAnimationFrame(frame); setAvailable(false); }
-      canvas.style.cursor = 'grab';
       panelLayer.addEventListener('pointerdown', startDrag);
       panelLayer.addEventListener('pointermove', dragMove);
       panelLayer.addEventListener('pointerup', dragEnd);
@@ -467,6 +467,7 @@ export default function ParticleStage({ app, active, panels, onSelect, onReset, 
       {available && mounts.length > 0 && <button type="button" className={s.sceneReset} onClick={() => controls.current?.resetPanels()}>{t("패널 배치 초기화")}</button>}
       <button type="button" className={s.sceneReset} onClick={() => controls.current?.reset()}>{t("시점 초기화")}</button>
     </>}</div>
-    <p className={s.particleHelp}>{available ? active ? t("선택한 패널 앞으로 이동했어요") : t("패널 제목 드래그 · 배치  /  배경 드래그 · 회전  /  우클릭 · 이동  /  스크롤 · 줌") : t("3D를 사용할 수 없어 정보 패널을 표시합니다")}</p>
+    {available && !active && <ControlGuide />}
+    {(!available || active) && <p className={s.particleHelp}>{available ? t("선택한 패널 앞으로 이동했어요") : t("3D를 사용할 수 없어 정보 패널을 표시합니다")}</p>}
   </div>;
 }

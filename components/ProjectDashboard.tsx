@@ -16,7 +16,7 @@ const ParticleStage = dynamic(() => import('./ParticleStage'), { ssr: false });
 const labels: Record<PanelId, string> = { metrics: '앱 지표', trends: '지표 추이', compare: '배포와 실행 상태', servers: '앱 파드와 자원', logs: '앱 실행 로그', traffic: '거점과 트래픽' };
 class RequestError extends Error { constructor(public status: number) { super('데이터를 불러오지 못했어요.'); } }
 
-export function ProjectDashboard({ project, loginUrl, verifyUrl, accountUrl }: { project: Project; loginUrl: string; verifyUrl: string; accountUrl: string }) {
+export function ProjectDashboard({ project, loginUrl, verifyUrl, accountUrl, homeUrl }: { project: Project; loginUrl: string; verifyUrl: string; accountUrl: string; homeUrl: string }) {
   const { t, locale } = useI18n();
   const [view, setView] = useState<'spatial' | 'list'>('spatial');
   const [wide, setWide] = useState(false);
@@ -78,7 +78,7 @@ export function ProjectDashboard({ project, loginUrl, verifyUrl, accountUrl }: {
   const status = data?.status.state === 'ready' ? data.status.data : null;
   return <div className={`${s.page} ${view === 'spatial' ? s.spatial : ''}`}>
     <a className={s.skipLink} href="#overview">{t("모니터링 본문으로 이동")}</a>
-    <header className={s.top}><div className={s.topInner}><a className={s.brand} href={accountUrl}>Lily<span className={s.brandDot}>.</span></a><a href="/dashboard">{t("내 프로젝트 ↗")}</a><LanguageMenu /></div></header>
+    <header className={s.top}><div className={s.topInner}><a className={s.brand} href={homeUrl}>Lily<span className={s.brandDot}>.</span></a><a href="/dashboard">{t("내 프로젝트 ↗")}</a><a href={accountUrl}>{t("계정으로 ↗")}</a><LanguageMenu /></div></header>
     <div className={s.toolbar}><span className={s.projectName} title={`${project.repo}/${project.rootDir}`}>{project.target === 'onprem' ? t("내 PC · ") : ''}{project.name}</span><div className={s.segmented} role="group" aria-label={t("조회 기간")}>{[['5m', t("5분")], ['15m', t("15분")], ['1h', t("1시간")]].map(([value, label]) => <button key={value} aria-pressed={range === value} onClick={() => setRange(value)}>{t(label)}</button>)}</div><button className={s.refresh} disabled={query.isFetching} onClick={() => void query.refetch()} aria-label={t("모든 패널 새로고침")}>↻</button></div>
     <main className={s.main} id="overview" tabIndex={-1}>
       <div className={s.pageHeading}><div><p className={s.eyebrow}>{project.target === 'cloud' ? 'CLOUD' : 'ON PREMISE'}</p><h1>{project.name}</h1><p className={s.subtitle}>{project.repo}{project.rootDir ? ` / ${project.rootDir}` : ''}</p></div><div className={s.viewControls}><div className={s.segmented} role="group" aria-label={t("대시보드 보기")}><button aria-pressed={view === 'spatial'} onClick={() => { setView('spatial'); setActive(null); }}>{t("공간 보기")}</button><button aria-pressed={view === 'list'} onClick={() => { setView('list'); setActive(null); }}>{t("목록 보기")}</button></div></div></div>
