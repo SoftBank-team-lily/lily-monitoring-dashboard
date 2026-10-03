@@ -1,5 +1,7 @@
 'use client';
 
+import { useI18n } from "@/lib/i18n/provider";
+
 import { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useQuery } from '@tanstack/react-query';
@@ -19,11 +21,14 @@ import s from './dashboard.module.css';
 const ParticleStage = dynamic(() => import('./ParticleStage'), { ssr: false });
 
 function Failure({ what, retry }: { what: string; retry: () => void }) {
-  return <div className={s.failure} role="alert"><span>{what}를 불러오지 못했습니다.</span><button className={s.textButton} onClick={retry}>다시 시도 ↗</button></div>;
+  const { t } = useI18n();
+  return <div className={s.failure} role="alert"><span>{t(what)}{t("를 불러오지 못했습니다.")}</span><button className={s.textButton} onClick={retry}>{t("다시 시도 ↗")}</button></div>;
 }
-function Loading({ what }: { what: string }) { return <p className={s.loading} role="status">{what} 수집 중…</p>; }
+function Loading({ what }: { what: string }) {
+  const { t } = useI18n(); return <p className={s.loading} role="status">{t(what)} {" "}{t("수집 중…")}</p>; }
 
 export function Dashboard({ apps }: { apps: string[] }) {
+  const { t } = useI18n();
   const [view, setView] = useState<'spatial' | 'list'>('spatial');
   const [activePanel, setActivePanel] = useState<PanelId | null>(null);
   const [wide, setWide] = useState(false);
@@ -79,12 +84,12 @@ export function Dashboard({ apps }: { apps: string[] }) {
     select(target);
   }
   const panels: Record<PanelId, React.ReactNode> = {
-    metrics: metrics.isError ? <Failure what="앱 지표" retry={() => void metrics.refetch()} /> : metrics.data ? <section id="metrics" aria-labelledby="metrics-title"><div className={s.sectionHead}><h2 id="metrics-title">앱 지표</h2><span>최근 {windowLabel(metrics.data.window)} 요약</span></div><HealthTiles metrics={metrics.data} servers={servers.isError ? undefined : servers.data} /></section> : <Loading what="앱 지표" />,
-    trends: metrics.isError ? <Failure what="지표 추이" retry={() => void metrics.refetch()} /> : metrics.data ? <TrendCharts data={metrics.data} range={range} /> : <Loading what="지표 추이" />,
-    compare: metrics.isError ? <Failure what="버전 비교" retry={() => void metrics.refetch()} /> : metrics.data ? <VersionCompare data={metrics.data} /> : <Loading what="버전 비교" />,
-    servers: <div id="servers">{servers.isError ? <Failure what="서버 지표" retry={() => void servers.refetch()} /> : servers.data ? <ServerList data={servers.data} /> : <Loading what="서버 지표" />}</div>,
-    logs: <div id="logs">{logs.isError ? <Failure what="로그" retry={() => void logs.refetch()} /> : logs.data ? <LogTable key={app} data={logs.data} filter={filter} onFilter={setFilter} roles={roles} version={logVersion} onVersion={setLogVersion} /> : <Loading what="로그" />}</div>,
-    traffic: <section className={s.trafficPanel}><div className={s.cardHead}><h2>거점과 트래픽</h2></div><p className={s.empty}>실제 온프레미스 프로젝트에서 거점과 트래픽을 관리할 수 있어요.</p></section>,
+    metrics: metrics.isError ? <Failure what={t("앱 지표")} retry={() => void metrics.refetch()} /> : metrics.data ? <section id="metrics" aria-labelledby="metrics-title"><div className={s.sectionHead}><h2 id="metrics-title">{t("앱 지표")}</h2><span>{t("최근")}{" "}{t(windowLabel(metrics.data.window))} {" "}{t("요약")}</span></div><HealthTiles metrics={metrics.data} servers={servers.isError ? undefined : servers.data} /></section> : <Loading what={t("앱 지표")} />,
+    trends: metrics.isError ? <Failure what={t("지표 추이")} retry={() => void metrics.refetch()} /> : metrics.data ? <TrendCharts data={metrics.data} range={range} /> : <Loading what={t("지표 추이")} />,
+    compare: metrics.isError ? <Failure what={t("버전 비교")} retry={() => void metrics.refetch()} /> : metrics.data ? <VersionCompare data={metrics.data} /> : <Loading what={t("버전 비교")} />,
+    servers: <div id="servers">{servers.isError ? <Failure what={t("서버 지표")} retry={() => void servers.refetch()} /> : servers.data ? <ServerList data={servers.data} /> : <Loading what={t("서버 지표")} />}</div>,
+    logs: <div id="logs">{logs.isError ? <Failure what={t("로그")} retry={() => void logs.refetch()} /> : logs.data ? <LogTable key={app} data={logs.data} filter={filter} onFilter={setFilter} roles={roles} version={logVersion} onVersion={setLogVersion} /> : <Loading what={t("로그")} />}</div>,
+    traffic: <section className={s.trafficPanel}><div className={s.cardHead}><h2>{t("거점과 트래픽")}</h2></div><p className={s.empty}>{t("실제 온프레미스 프로젝트에서 거점과 트래픽을 관리할 수 있어요.")}</p></section>,
   };
   const focusedScene = view === 'spatial' && wide && activePanel !== null;
   const order: PanelId[] = view === 'spatial' ? ['metrics', 'compare', 'servers', 'logs', 'traffic', 'trends'] : ['metrics', 'trends', 'compare', 'servers', 'logs', 'traffic'];
@@ -92,20 +97,20 @@ export function Dashboard({ apps }: { apps: string[] }) {
   return <div className={`${s.page} ${view === 'spatial' ? s.spatial : ''}`}>
     <TopBar apps={apps} app={app} onApp={(value) => { setApp(value); setActivePanel(null); setLogVersion('ALL'); setFilter('ALL'); }} range={range} onRange={setRange} updatedAt={metrics.data ? Date.parse(metrics.data.generatedAt) : undefined} mock={USE_MOCK} refreshing={metrics.isFetching || servers.isFetching || logs.isFetching} onRefresh={refresh} />
     <main className={s.main} id="overview" tabIndex={-1}>
-      <div className={s.pageHeading}><div><p className={s.eyebrow}>OBSERVABILITY</p><h1>서비스 모니터링</h1><p className={s.subtitle}>배포 이후의 상태를 한눈에.</p></div><div className={s.viewControls}><span className={s.polling}>지표 15초 · 로그 10초 갱신</span><div className={s.segmented} role="group" aria-label="대시보드 보기"><button type="button" aria-pressed={view === 'spatial'} onClick={() => { setView('spatial'); setActivePanel(null); }}>공간 보기</button><button type="button" aria-pressed={view === 'list'} onClick={() => { setView('list'); setActivePanel(null); }}>목록 보기</button></div></div></div>
-      <nav className={s.sectionNav} aria-label="패널 바로가기"><a href="#metrics">앱 지표</a><a href="#compare">버전 비교</a><a href="#servers">서버</a><a href="#logs">로그</a></nav>
+      <div className={s.pageHeading}><div><p className={s.eyebrow}>OBSERVABILITY</p><h1>{t("서비스 모니터링")}</h1><p className={s.subtitle}>{t("배포 이후의 상태를 한눈에.")}</p></div><div className={s.viewControls}><span className={s.polling}>{t("지표 15초 · 로그 10초 갱신")}</span><div className={s.segmented} role="group" aria-label={t("대시보드 보기")}><button type="button" aria-pressed={view === 'spatial'} onClick={() => { setView('spatial'); setActivePanel(null); }}>{t("공간 보기")}</button><button type="button" aria-pressed={view === 'list'} onClick={() => { setView('list'); setActivePanel(null); }}>{t("목록 보기")}</button></div></div></div>
+      <nav className={s.sectionNav} aria-label={t("패널 바로가기")}><a href="#metrics">{t("앱 지표")}</a><a href="#compare">{t("버전 비교")}</a><a href="#servers">{t("서버")}</a><a href="#logs">{t("로그")}</a></nav>
       {metrics.data && !metrics.isError && <StatusHero data={metrics.data} servers={servers.isError ? undefined : servers.data} onInvestigate={investigate} />}
       <div className={s.layout} data-focus={activePanel ?? undefined} data-expanded={focusedScene || undefined}>
         {view === 'spatial' && wide ? <ParticleStage app={app} active={activePanel} panels={panels} onSelect={select} onReset={reset} /> : order.map((id) => {
           const point = OBSERVATION_POINTS.find((p) => p.id === id)!;
           const hidden = focusedScene && activePanel !== id;
-          return <div key={id} className={s.scenePanel} data-panel={id} data-selected={activePanel === id || undefined} tabIndex={-1} inert={hidden} aria-hidden={hidden || undefined} aria-label={`${point.label}${activePanel === id ? ' 상세 보기' : ''}`}>
-            <div className={s.bubbleControl}><span>{point.number} / {point.label}</span><button type="button" aria-label={activePanel === id ? `${point.label} 상세 보기 닫기` : `${point.label} 패널 확대`} aria-expanded={activePanel === id} onClick={() => activePanel === id ? reset() : select(id)}>{activePanel === id ? '전체 보기 ↙' : '확대 ↗'}</button></div>
+          return <div key={id} className={s.scenePanel} data-panel={id} data-selected={activePanel === id || undefined} tabIndex={-1} inert={hidden} aria-hidden={hidden || undefined} aria-label={`${t(point.label)}${activePanel === id ? t(" 상세 보기") : ''}`}>
+            <div className={s.bubbleControl}><span>{point.number} / {t(t(point.label))}</span><button type="button" aria-label={activePanel === id ? t("{{value0}} 상세 보기 닫기", { value0: t(point.label) }) : t("{{value0}} 패널 확대", { value0: t(point.label) })} aria-expanded={activePanel === id} onClick={() => activePanel === id ? reset() : select(id)}>{activePanel === id ? t("전체 보기 ↙") : t("확대 ↗")}</button></div>
             <div className={s.bubbleContent}>{panels[id]}</div>
           </div>;
         })}
       </div>
-      <footer className={s.footer}><span>Lily<span className={s.brandDot}>.</span> <span>모니터링</span></span><span>{USE_MOCK ? '데모 모드 · 실제 서비스 상태가 아닙니다' : 'Observability API'} · 시간은 기기 현지 시각</span></footer>
+      <footer className={s.footer}><span>Lily<span className={s.brandDot}>.</span> <span>{t("모니터링")}</span></span><span>{USE_MOCK ? t("데모 모드 · 실제 서비스 상태가 아닙니다") : 'Observability API'} {" "}{t("· 시간은 기기 현지 시각")}</span></footer>
     </main>
   </div>;
 }

@@ -1,3 +1,6 @@
+"use client";
+
+import { useI18n } from "@/lib/i18n/provider";
 import type { Role, Status } from '@/lib/types';
 import s from './dashboard.module.css';
 
@@ -24,10 +27,11 @@ export function StatusIcon({ status, size = 16 }: { status: Status; size?: numbe
 }
 
 export function StatusBadge({ status }: { status: Status }) {
+  const { t } = useI18n();
   return (
     <span className={s.badge} data-status={status}>
       <StatusIcon status={status} size={14} />
-      {LABEL[status]}
+      {t(LABEL[status])}
     </span>
   );
 }

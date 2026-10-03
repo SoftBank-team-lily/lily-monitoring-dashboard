@@ -50,3 +50,7 @@ npm run dev -- --port 3000
 
 실제 계약: [프로젝트 관측 API](docs/project-api.md).
 기존 [화면 검토](docs/design-review.md)와 [데모 API 설계](docs/api-contract.md)는 시제품 참고 문서입니다.
+
+## 다국어 UI
+
+한국어(기본) · 영어 · 일본어를 상단 지구본 메뉴에서 선택할 수 있습니다. 프런트와 대시보드 사이에서도 설정을 유지합니다. 번역 추가와 연결 방식은 [언어 설정 문서](docs/i18n.md)를 참고하세요.
