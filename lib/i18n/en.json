@@ -723,5 +723,9 @@
   "{{value0}}의 응답 시간(p95 {{value1}}ms)이 기준({{value2}}ms)을 넘었어요. 롤백 여부를 확인하세요.": "{{value0}} latency (p95 {{value1}}ms) exceeds the {{value2}}ms threshold. Check whether a rollback is needed.",
   "{{value0}}의 응답 시간(p95 {{value1}}ms)이 느려지고 있어요. 추이를 지켜보세요.": "{{value0}} latency (p95 {{value1}}ms) is slowing down. Watch the trend.",
   "새 버전 {{value0}}": "New version {{value0}}",
-  "기존 버전 {{value0}}": "Existing version {{value0}}"
+  "기존 버전 {{value0}}": "Existing version {{value0}}",
+  "{{value0}} 패널 이동": "Move {{value0}} panel",
+  "드래그하거나 방향키로 패널을 이동하세요. Shift를 누르면 더 크게 이동해요.": "Drag or use the arrow keys to move the panel. Hold Shift for larger steps.",
+  "패널 배치 초기화": "Reset panel layout",
+  "패널 제목 드래그 · 배치  /  배경 드래그 · 회전  /  우클릭 · 이동  /  스크롤 · 줌": "Drag panel title · arrange  /  Drag background · rotate  /  Right drag · pan  /  Scroll · zoom"
 }
