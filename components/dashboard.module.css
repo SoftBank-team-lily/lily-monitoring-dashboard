@@ -393,12 +393,18 @@
 .trafficSection { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
 .trafficRow strong { font-size: 12px; }
 .trafficActions, .trafficModes { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
-.trafficActions button, .trafficModes button { padding: 7px 10px; min-height: 33px; border: 1px solid var(--line-strong); border-radius: 5px; background: transparent; color: var(--text-2); font-size: 11px; }
-.trafficActions button:hover:not(:disabled), .trafficModes button:hover:not(:disabled), .trafficModes button[aria-pressed='true'] { border-color: var(--accent); color: var(--text); background: #e0567e19; }
+.trafficActions button, .trafficModes button, .trafficQuick button { padding: 7px 10px; min-height: 33px; border: 1px solid var(--line-strong); border-radius: 5px; background: transparent; color: var(--text-2); font-size: 11px; }
+.trafficActions button:hover:not(:disabled), .trafficModes button:hover:not(:disabled), .trafficQuick button:hover:not(:disabled), .trafficModes button[aria-pressed='true'] { border-color: var(--accent); color: var(--text); background: #e0567e19; }
 .trafficActions button:first-child { border-color: var(--accent); color: var(--text); }
 .trafficConfirm { margin-top: 10px; padding: 12px; border: 1px solid var(--warn-line); border-radius: var(--radius); background: var(--warn-soft); font-size: 11px; }
 .trafficConfirm p { margin: 0 0 8px; }
 .trafficConfirm label { display: flex; align-items: center; gap: 6px; }
+.moveDatabase { display: flex; flex-direction: column; gap: 8px; margin: 10px 0; padding: 0; border: 0; }
+.moveDatabase legend { margin-bottom: 6px; padding: 0; }
+.moveDatabase label { align-items: flex-start; }
+.moveDatabase label span { display: flex; flex-direction: column; gap: 2px; }
+.moveDatabase input:disabled + span { opacity: .45; }
+.trafficQuick { display: none; }
 .trafficSlider { margin-top: 12px; }
 .trafficSlider label { font-size: 12px; }
 .trafficSlider input { width: 100%; margin-top: 9px; accent-color: var(--accent); }
@@ -408,6 +414,7 @@
   .spatial .scenePanel[data-panel='traffic']:not([data-selected='true']) .trafficFootnote,
   .spatial .scenePanel[data-panel='traffic']:not([data-selected='true']) .trafficSection { display: none; }
   .spatial .scenePanel[data-panel='traffic'][data-selected='true'] .bubbleContent { max-height: calc(100% - 46px); overflow: auto; }
+  .spatial .scenePanel[data-panel='traffic']:not([data-selected='true']) .trafficQuick { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
 }
 @media (min-width: 1100px) {
   .spatial .liveLogs { max-height: 150px; }

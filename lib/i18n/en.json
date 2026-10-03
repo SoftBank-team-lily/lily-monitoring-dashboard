@@ -736,5 +736,10 @@
   "배치": "Arrange",
   "회전": "Rotate",
   "이동": "Pan",
-  "줌": "Zoom"
+  "줌": "Zoom",
+  "내 PC 에이전트 연결됨": "My PC agent connected",
+  "내 PC 에이전트가 연결되지 않았어요.": "The agent on my PC is not connected.",
+  "에이전트 연결하기 ↗": "Connect agent ↗",
+  "전환을 시작했어요. 진행 상황은 배포와 실행 상태에서 확인해 주세요.": "The move has started. Check progress in Deployment and runtime status.",
+  "에이전트 상태를 불러오지 못했어요.": "Couldn't load the agent status."
 }

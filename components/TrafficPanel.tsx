@@ -5,6 +5,7 @@ import { useI18n } from "@/lib/i18n/provider";
 import { useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { Project } from '@/lib/project';
+import { MoveToOnPrem } from './MoveToOnPrem';
 import s from './dashboard.module.css';
 
 const homeName: Record<string, string> = {
@@ -31,14 +32,19 @@ function Place({ name, status, detail }: { name: 'HOME' | 'AWS'; status: string;
   </div>;
 }
 
-export function TrafficPanel({ project }: { project: Project }) {
+/**
+ * @param accountUrl 내 PC 에이전트를 연결하는 계정 화면
+ * @param onExpand 개요 패널의 버튼이 확인 창을 열 때 패널을 크게 펼친다
+ */
+export function TrafficPanel({ project, accountUrl = '/account', onExpand }: { project: Project; accountUrl?: string; onExpand?: () => void }) {
   const { t } = useI18n();
   const cache = useQueryClient();
   const query = useQuery({
     queryKey: ['project-control', project.id],
     queryFn: ({ signal }) => readProject(project.id, signal),
     initialData: project,
-    refetchInterval: 15000,
+    // 클라우드 → 온프레미스 전환 중에는 진행을 빨리 보여 준다
+    refetchInterval: (state) => ['queued', 'running'].includes(state.state.data?.latestDeployment?.status ?? '') ? 5000 : 15000,
     refetchOnWindowFocus: 'always',
   });
   const current = query.data;
@@ -77,10 +83,7 @@ export function TrafficPanel({ project }: { project: Project }) {
     } finally { setBusy(false); }
   }
 
-  if (project.target !== 'onprem') return <section className={s.trafficPanel}>
-    <div className={s.cardHead}><h2>{t("거점과 트래픽")}</h2></div>
-    <p className={s.empty}>{t("온프레미스로 배포한 프로젝트에서 거점 전환과 클라우드 버스팅을 관리할 수 있어요.")}</p>
-  </section>;
+  if (current.target !== 'onprem') return <MoveToOnPrem project={current} accountUrl={accountUrl} onExpand={onExpand} />;
 
   const moving = live?.home.startsWith('MOVING') ?? false;
   const controlReady = Boolean(burst && burst.agent === 'connected' && live?.available !== false);
@@ -98,6 +101,11 @@ export function TrafficPanel({ project }: { project: Project }) {
         detail={live?.home === 'ONPREM' ? t("현재 공개 주소 거점") : live?.home.startsWith('MOVING') ? t("거점 전환 중") : t("대기 또는 확인 중")} />
       <Place name="AWS" status={cloud ? t("{{value0}}/{{value1}} Pod 준비", { value0: cloud.ready, value1: cloud.replicas }) : t("클라우드 상태 미수집")}
         detail={live?.home === 'CLOUD' ? t("현재 공개 주소 거점") : live?.warm ? t("버스팅 대기 준비됨") : t("대기 배포 확인 중")} />
+    </div>
+    {/* 개요 패널에서는 아래 '공개 주소 거점' 구역이 접혀 있어서 같은 버튼을 보인다. 누르면 패널이 펼쳐지고 확인 창이 열린다 */}
+    <div className={s.trafficQuick}>
+      <button type="button" disabled={!homeReady || busy || live?.home === 'ONPREM'} onClick={() => { setTarget('onprem'); setMigrateDatabase(false); onExpand?.(); }}>{t("HOME으로 전환")}</button>
+      <button type="button" disabled={!homeReady || busy || live?.home === 'CLOUD'} onClick={() => { setTarget('cloud'); setMigrateDatabase(false); onExpand?.(); }}>{t("AWS로 전환")}</button>
     </div>
     <p className={s.trafficFootnote}>{t("HOME/AWS별 CPU·RAM·p95 관측 API가 연결되면 각 값을 표시합니다. 앱 전체 지표를 한쪽 값으로 대체하지 않습니다.")}</p>
     <div className={s.trafficSection}>

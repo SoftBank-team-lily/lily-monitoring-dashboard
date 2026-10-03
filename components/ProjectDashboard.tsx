@@ -73,8 +73,8 @@ export function ProjectDashboard({ project, loginUrl, verifyUrl, accountUrl, hom
     metrics: <MetricPanel data={data} />, trends: <TrendPanel data={data} />,
     compare: <DeploymentPanel data={data} />, servers: <PodPanel data={data} />,
     logs: <LogsPanel data={data} level={level} onLevel={setLevel} />,
-    traffic: <TrafficPanel project={project} />,
-  } : { metrics: fallback, trends: fallback, compare: fallback, servers: fallback, logs: fallback, traffic: <TrafficPanel project={project} /> };
+    traffic: <TrafficPanel project={project} accountUrl={accountUrl} onExpand={() => select('traffic')} />,
+  } : { metrics: fallback, trends: fallback, compare: fallback, servers: fallback, logs: fallback, traffic: <TrafficPanel project={project} accountUrl={accountUrl} onExpand={() => select('traffic')} /> };
   const status = data?.status.state === 'ready' ? data.status.data : null;
   return <div className={`${s.page} ${view === 'spatial' ? s.spatial : ''}`}>
     <a className={s.skipLink} href="#overview">{t("모니터링 본문으로 이동")}</a>

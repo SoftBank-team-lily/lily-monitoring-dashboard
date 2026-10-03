@@ -3,9 +3,15 @@ export type Project = {
   id: string; name: string; repo: string; rootDir: string; target: 'cloud' | 'onprem';
   burst?: ProjectBurst | null;
   cloudPods?: { state: string; ready: number; replicas: number } | null;
+  /** 등록할 때 고른 DB. 클라우드 → 온프레미스 전환에서 DB 위치를 고를 수 있는지 정한다 */
+  database?: 'postgres' | 'mysql' | 'none' | null;
+  /** 클라우드에서 내 PC 로 옮긴 앱 (공개 주소는 그대로) */
+  movedFromCloud?: boolean;
   latestDeployment: null | {
     id: string; status: string; stage: string | null; url: string | null;
     message: string | null; logs: string[];
+    /** onprem: 클라우드 앱을 내 PC 로 옮기는 배포 */
+    move?: 'onprem' | null;
   };
 };
 export type ProjectBurst = {
