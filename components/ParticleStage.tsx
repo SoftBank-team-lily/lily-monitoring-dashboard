@@ -11,12 +11,12 @@ export type { PanelId } from '@/lib/flower-particles';
 type SceneControls = { update: (panel: PanelId | null) => void; reset: () => void };
 interface Props { labels?: Partial<Record<PanelId, string>>; app: string; active: PanelId | null; panels: Record<PanelId, ReactNode>; onSelect: (panel: PanelId) => void; onReset: () => void; }
 const PANEL_PLACES: Record<PanelId, { position: [number, number, number]; width: number }> = {
-  metrics: { position: [-5.35, 2.2, .65], width: 420 },
-  compare: { position: [5.35, 2.05, -.15], width: 430 },
-  servers: { position: [-5.5, -1.32, 1.2], width: 420 },
-  logs: { position: [5.5, -1.35, .9], width: 440 },
-  trends: { position: [5.4, -3.5, 2.15], width: 440 },
-  traffic: { position: [-5.4, -3.5, 2.15], width: 440 },
+  metrics: { position: [-4.25, 2.2, .65], width: 420 },
+  compare: { position: [4.25, 2.05, -.15], width: 430 },
+  servers: { position: [-4.35, -1.32, 1.2], width: 420 },
+  logs: { position: [4.35, -1.35, .9], width: 440 },
+  trends: { position: [4.25, -3.5, 2.15], width: 440 },
+  traffic: { position: [-4.25, -3.5, 2.15], width: 440 },
 };
 const PANEL_SCALE = .01;
 
